@@ -3,6 +3,8 @@ package com.jove.starskylib;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Point;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -32,6 +34,10 @@ public class StarSkyView extends FrameLayout {
     private List<Star> mNearStarList;
     private List<Star> mFarStarList;
 
+    //流星
+    private Paint mMeteorPaint;
+    private int meteorSize = 100;
+    private int meteorRadius = 4;
 
     public StarSkyView(@NonNull Context context) {
         this(context, null);
@@ -49,6 +55,10 @@ public class StarSkyView extends FrameLayout {
     private void init() {
         mNearStarList = new ArrayList<>();
         mFarStarList = new ArrayList<>();
+
+        mMeteorPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mMeteorPaint.setColor(Color.WHITE);
+        mMeteorPaint.setStyle(Paint.Style.FILL);
     }
 
     @Override
@@ -63,6 +73,19 @@ public class StarSkyView extends FrameLayout {
         starAnim();
     }
 
+    private void drawMeteor(Canvas canvas) {
+
+        canvas.save();
+        canvas.translate(mTranslationY, mTranslationY);
+
+        canvas.drawCircle(meteorSize - meteorRadius, meteorSize - meteorRadius, meteorRadius, mMeteorPaint);
+        canvas.drawLine(0, 0, meteorSize - meteorRadius, (meteorSize - (meteorRadius * 2)), mMeteorPaint);
+        canvas.drawLine(0, 0, (meteorSize - (meteorRadius * 2)), meteorSize - meteorRadius, mMeteorPaint);
+        canvas.drawLine(meteorSize - meteorRadius, (meteorSize - (meteorRadius * 2)), (meteorSize - (meteorRadius * 2)), meteorSize - meteorRadius, mMeteorPaint);
+
+        canvas.restore();
+    }
+
     /**
      * 实现星星的从右往左动画
      */
@@ -72,7 +95,7 @@ public class StarSkyView extends FrameLayout {
             mFarStarAnimator.setRepeatCount(ValueAnimator.INFINITE);//设置无限重复
             mFarStarAnimator.setRepeatMode(ValueAnimator.RESTART);//设置重复模式
             mFarStarAnimator.setInterpolator(new LinearInterpolator());
-            mFarStarAnimator.setDuration(4000);
+            mFarStarAnimator.setDuration(40000);
             mFarStarAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                 @Override
                 public void onAnimationUpdate(ValueAnimator animation) {
@@ -90,7 +113,12 @@ public class StarSkyView extends FrameLayout {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
+
+        //绘制星星
         DrawStar(canvas);
+
+        //绘制流星
+        drawMeteor(canvas);
     }
 
     private void DrawStar(Canvas canvas) {
