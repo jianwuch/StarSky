@@ -1,5 +1,6 @@
 package com.jove.starskylib;
 
+import android.animation.Animator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -27,8 +28,9 @@ public class StarSkyView extends FrameLayout {
 
     private int mHeight, mWidth;
 
-    private ValueAnimator mFarStarAnimator, mNearStarAnimator;
+    private ValueAnimator mFarStarAnimator, metroeAnimator;
     private float mTranslationY;
+    private int meteorTran;
 
     //近远点星星的数量
     static int NEAR_STARS_NUM = 10, FAR_STARS_NUM = 10;
@@ -40,6 +42,7 @@ public class StarSkyView extends FrameLayout {
     private int meteorSize = 100;
     private int meteorRadius = 4;
     private float metrorTransMax;//流星划过的最大距离
+    private float mRandomPosition;//流星开始的随机位置
 
     public StarSkyView(@NonNull Context context) {
         this(context, null);
@@ -80,11 +83,7 @@ public class StarSkyView extends FrameLayout {
     private void drawMeteor(Canvas canvas) {
 
         canvas.save();
-
-        //移动是左右滑动的40倍速度
-        float currentTrans = mTranslationY * 40;
-        currentTrans = currentTrans % metrorTransMax;
-        canvas.translate(currentTrans, currentTrans);
+        canvas.translate(meteorTran + mRandomPosition, meteorTran);
 
         canvas.drawCircle(meteorSize - meteorRadius, meteorSize - meteorRadius, meteorRadius, mMeteorPaint);
         Path triangle = new Path();
@@ -116,8 +115,47 @@ public class StarSkyView extends FrameLayout {
             });
         }
 
+        if (null == metroeAnimator) {
+            metroeAnimator = ValueAnimator.ofInt(0, (int) mHeight);
+            metroeAnimator.setRepeatCount(ValueAnimator.INFINITE);//设置无限重复
+            metroeAnimator.setRepeatMode(ValueAnimator.RESTART);//设置重复模式
+            metroeAnimator.setInterpolator(new LinearInterpolator());
+            metroeAnimator.setDuration(1500);
+            metroeAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                @Override
+                public void onAnimationUpdate(ValueAnimator animation) {
+                    meteorTran = (int) animation.getAnimatedValue();
+                    invalidate();
+                }
+            });
+
+            metroeAnimator.addListener(new Animator.AnimatorListener() {
+                @Override
+                public void onAnimationStart(Animator animation) {
+
+                }
+
+                @Override
+                public void onAnimationEnd(Animator animation) {
+
+                }
+
+                @Override
+                public void onAnimationCancel(Animator animation) {
+
+                }
+
+                @Override
+                public void onAnimationRepeat(Animator animation) {
+                    Random rand = new Random();
+                    mRandomPosition = rand.nextInt(mWidth);
+                }
+            });
+        }
+        metroeAnimator.cancel();
         mFarStarAnimator.cancel();
         mFarStarAnimator.start();
+        metroeAnimator.start();
     }
 
     @Override
