@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.Point;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -38,6 +39,7 @@ public class StarSkyView extends FrameLayout {
     private Paint mMeteorPaint;
     private int meteorSize = 100;
     private int meteorRadius = 4;
+    private float metrorTransMax;//流星划过的最大距离
 
     public StarSkyView(@NonNull Context context) {
         this(context, null);
@@ -69,6 +71,8 @@ public class StarSkyView extends FrameLayout {
         mHeight = getMeasuredHeight();
         mWidth = getMeasuredWidth();
 
+        metrorTransMax = mHeight * 1.414f;
+
         randomNewStar();
         starAnim();
     }
@@ -76,12 +80,19 @@ public class StarSkyView extends FrameLayout {
     private void drawMeteor(Canvas canvas) {
 
         canvas.save();
-        canvas.translate(mTranslationY, mTranslationY);
+
+        //移动是左右滑动的40倍速度
+        float currentTrans = mTranslationY * 40;
+        currentTrans = currentTrans % metrorTransMax;
+        canvas.translate(currentTrans, currentTrans);
 
         canvas.drawCircle(meteorSize - meteorRadius, meteorSize - meteorRadius, meteorRadius, mMeteorPaint);
-        canvas.drawLine(0, 0, meteorSize - meteorRadius, (meteorSize - (meteorRadius * 2)), mMeteorPaint);
-        canvas.drawLine(0, 0, (meteorSize - (meteorRadius * 2)), meteorSize - meteorRadius, mMeteorPaint);
-        canvas.drawLine(meteorSize - meteorRadius, (meteorSize - (meteorRadius * 2)), (meteorSize - (meteorRadius * 2)), meteorSize - meteorRadius, mMeteorPaint);
+        Path triangle = new Path();
+        triangle.lineTo(meteorSize - meteorRadius, (meteorSize - (meteorRadius * 2)));
+        triangle.lineTo((meteorSize - (meteorRadius * 2)), meteorSize - meteorRadius);
+        triangle.close();
+
+        canvas.drawPath(triangle, mMeteorPaint);
 
         canvas.restore();
     }
