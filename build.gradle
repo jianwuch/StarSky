@@ -8,8 +8,10 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.0.1'
-        
 
+        //JitPack Maven Gradle Plugin
+        //Here you can get the latest version:https://plugins.gradle.org/plugin/com.github.dcendents.android-maven
+        classpath 'com.github.dcendents:android-maven-gradle-plugin:2.1'
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
