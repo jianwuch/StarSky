@@ -1,8 +1,8 @@
 package com.jove.starskylib;
 
-import android.animation.Animator;
 import android.animation.ValueAnimator;
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -13,9 +13,7 @@ import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.animation.LinearInterpolator;
 import android.widget.FrameLayout;
-
 import com.jove.starskylib.model.Star;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -26,23 +24,31 @@ import java.util.Random;
 
 public class StarSkyView extends FrameLayout {
 
+    private static final int DEFAULT_FAR_STAR_TRANS_TIMES_SECOND = 40 * 1000;
+    private static final int DEFAULT_METEOR_SPEED = 4;//每次刷新移动的距离
+    private static final int DEFAULT_METEOR_STAR_SIZE = 2;
+    private static final int DEFAULT_STAR_NUMS = 10;
     private int mHeight, mWidth;
 
-    private ValueAnimator mFarStarAnimator, metroeAnimator;
+    private ValueAnimator mFarStarAnimator;
     private float mTranslationY;
-    private int meteorTran;
+    private int meteorTran;//流星水平移动的距离
 
-    //近远点星星的数量
-    static int NEAR_STARS_NUM = 10, FAR_STARS_NUM = 10;
+
+    //近点和远点星星分别多少个
+    private int mStarNums;
+
+    //移动一个循环需要的时间
+    private int mTimes;
     private List<Star> mNearStarList;
     private List<Star> mFarStarList;
 
     //流星
     private Paint mMeteorPaint;
     private int meteorSize = 100;
-    private int meteorRadius = 4;
-    private float metrorTransMax;//流星划过的最大距离
+    private int meteorRadius = DEFAULT_METEOR_STAR_SIZE;
     private float mRandomPosition;//流星开始的随机位置
+    private Random mMeteorRandom;
 
     public StarSkyView(@NonNull Context context) {
         this(context, null);
@@ -55,6 +61,13 @@ public class StarSkyView extends FrameLayout {
     public StarSkyView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
+        TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.StarSkyView);
+        meteorRadius = typedArray.getInt(R.styleable.StarSkyView_meteor_head_size,
+                DEFAULT_METEOR_STAR_SIZE);
+        mStarNums = typedArray.getInt(R.styleable.StarSkyView_star_nums, DEFAULT_STAR_NUMS);
+
+        mTimes = typedArray.getInt(R.styleable.StarSkyView_one_cycle_time,
+                DEFAULT_FAR_STAR_TRANS_TIMES_SECOND);
     }
 
     private void init() {
@@ -64,17 +77,15 @@ public class StarSkyView extends FrameLayout {
         mMeteorPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mMeteorPaint.setColor(Color.WHITE);
         mMeteorPaint.setStyle(Paint.Style.FILL);
+        mMeteorRandom = new Random();
     }
 
     @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
         //拿到布局的高宽
         mHeight = getMeasuredHeight();
         mWidth = getMeasuredWidth();
-
-        metrorTransMax = mHeight * 1.414f;
 
         randomNewStar();
         starAnim();
@@ -82,10 +93,19 @@ public class StarSkyView extends FrameLayout {
 
     private void drawMeteor(Canvas canvas) {
 
+        //meteorSize流星的宽度，最开始的时候流星不显示，需要移出去流星的长度距离
+        int needTransX;
+        meteorTran += DEFAULT_METEOR_SPEED;
+        if (meteorTran >= mWidth) {
+            meteorTran = 0;
+            mRandomPosition = mMeteorRandom.nextInt(mWidth);
+        }
+        needTransX = (int) (meteorTran + mRandomPosition - meteorSize);
         canvas.save();
-        canvas.translate(meteorTran + mRandomPosition, meteorTran);
+        canvas.translate(meteorTran + mRandomPosition - meteorSize, meteorTran);
 
-        canvas.drawCircle(meteorSize - meteorRadius, meteorSize - meteorRadius, meteorRadius, mMeteorPaint);
+        canvas.drawCircle(meteorSize - meteorRadius, meteorSize - meteorRadius, meteorRadius,
+                mMeteorPaint);
         Path triangle = new Path();
         triangle.lineTo(meteorSize - meteorRadius, (meteorSize - (meteorRadius * 2)));
         triangle.lineTo((meteorSize - (meteorRadius * 2)), meteorSize - meteorRadius);
@@ -105,7 +125,7 @@ public class StarSkyView extends FrameLayout {
             mFarStarAnimator.setRepeatCount(ValueAnimator.INFINITE);//设置无限重复
             mFarStarAnimator.setRepeatMode(ValueAnimator.RESTART);//设置重复模式
             mFarStarAnimator.setInterpolator(new LinearInterpolator());
-            mFarStarAnimator.setDuration(40000);
+            mFarStarAnimator.setDuration(mTimes);
             mFarStarAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                 @Override
                 public void onAnimationUpdate(ValueAnimator animation) {
@@ -114,54 +134,13 @@ public class StarSkyView extends FrameLayout {
                 }
             });
         }
-
-        if (null == metroeAnimator) {
-            metroeAnimator = ValueAnimator.ofInt(0, (int) mHeight);
-            metroeAnimator.setRepeatCount(ValueAnimator.INFINITE);//设置无限重复
-            metroeAnimator.setRepeatMode(ValueAnimator.RESTART);//设置重复模式
-            metroeAnimator.setInterpolator(new LinearInterpolator());
-            metroeAnimator.setDuration(1500);
-            metroeAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                @Override
-                public void onAnimationUpdate(ValueAnimator animation) {
-                    meteorTran = (int) animation.getAnimatedValue();
-                    invalidate();
-                }
-            });
-
-            metroeAnimator.addListener(new Animator.AnimatorListener() {
-                @Override
-                public void onAnimationStart(Animator animation) {
-
-                }
-
-                @Override
-                public void onAnimationEnd(Animator animation) {
-
-                }
-
-                @Override
-                public void onAnimationCancel(Animator animation) {
-
-                }
-
-                @Override
-                public void onAnimationRepeat(Animator animation) {
-                    Random rand = new Random();
-                    mRandomPosition = rand.nextInt(mWidth);
-                }
-            });
-        }
-        metroeAnimator.cancel();
         mFarStarAnimator.cancel();
         mFarStarAnimator.start();
-        metroeAnimator.start();
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-
 
         //绘制星星
         DrawStar(canvas);
@@ -190,7 +169,6 @@ public class StarSkyView extends FrameLayout {
             currentY = (int) (star.position.x - realTrans);
         }
 
-
         star.realPosition.x = currentY;
 
         if (star.realPosition.x < 0) {
@@ -203,19 +181,18 @@ public class StarSkyView extends FrameLayout {
         mNearStarList.clear();
         mFarStarList.clear();
         Random rand = new Random();
-        for (int i = 0; i < FAR_STARS_NUM; i++) {
+        for (int i = 0; i < mStarNums; i++) {
             int x = rand.nextInt(mWidth);
             int y = rand.nextInt(mHeight);
             Star star = new Star(2, new Point(x, y));
             mFarStarList.add(star);
         }
 
-        for (int i = 0; i < NEAR_STARS_NUM; i++) {
+        for (int i = 0; i < mStarNums; i++) {
             int x = rand.nextInt(mWidth);
             int y = rand.nextInt(mHeight);
             Star star = new Star(4, new Point(x, y));
             mNearStarList.add(star);
-
         }
     }
 }

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <declare-styleable name="StarSkyView">
+
+    <!--最远的星星循环一次移动的时间，单位ms近点星星的移动速度默认是远星星的一般-->
+    <attr format="integer" name="one_cycle_time_ms" />
+
+    <!--远处星星的数量，近点星星和远点星星的数量是一致的-->
+    <attr format="integer" name="star_nums" />
+
+    <!--流星头部的尺寸-->
+    <attr format="integer|reference" name="meteor_head_size" />
+  </declare-styleable>
+</resources>
