@@ -1,6 +1,6 @@
 ## 带流星的星空动图
 ### 效果
-！[](https://github.com/jianwuch/StarSky/blob/master/pictures/demo.gif?raw=true)
+![image](https://github.com/jianwuch/StarSky/blob/master/pictures/demo.gif?raw=true)
 * 星星分远，近之分，移动速度不一样
 * 流星划过的效果
 >没有强制背景，这个可以让设计提供，使用场景灵活
