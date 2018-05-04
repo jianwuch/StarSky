@@ -50,6 +50,8 @@ public class StarSkyView extends FrameLayout {
     private float mRandomPosition;//流星开始的随机位置
     private Random mMeteorRandom;
 
+    private android.os.Handler mHandler;
+
     public StarSkyView(@NonNull Context context) {
         this(context, null);
     }
@@ -78,6 +80,8 @@ public class StarSkyView extends FrameLayout {
         mMeteorPaint.setColor(Color.WHITE);
         mMeteorPaint.setStyle(Paint.Style.FILL);
         mMeteorRandom = new Random();
+
+        mHandler = new android.os.Handler();
     }
 
     @Override
@@ -194,5 +198,32 @@ public class StarSkyView extends FrameLayout {
             Star star = new Star(4, new Point(x, y));
             mNearStarList.add(star);
         }
+    }
+
+    /**
+     * 暂停动画
+     */
+    public void pauseAnim() {
+        if (mFarStarAnimator == null) return;
+        mFarStarAnimator.pause();
+    }
+
+    /**
+     * 继续动画
+     */
+    public void resumeAnim() {
+        if (mFarStarAnimator == null) return;
+        mHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mFarStarAnimator.resume();
+            }
+        }, 500);
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        mHandler.removeCallbacksAndMessages(null);
     }
 }
