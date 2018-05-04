@@ -41,5 +41,5 @@ dependencies {
 ---|---
 one_cycle_time_ms | 远点星星循环一趟的时间
 star_nums | 星星的数量，分为远点星星和近点星星，都是您设置的数量
-meteor_head_size | 流星头部火球的大小，不要太大，建议2/4
+meteor_head_size | 流星头部火球的大小，不要太大，建议2或4
 
