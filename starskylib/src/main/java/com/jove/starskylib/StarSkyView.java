@@ -69,6 +69,7 @@ public class StarSkyView extends FrameLayout {
 
         mTimes = typedArray.getInt(R.styleable.StarSkyView_one_cycle_time_ms,
                 DEFAULT_FAR_STAR_TRANS_TIMES_SECOND);
+        typedArray.recycle();
     }
 
     private void init() {
