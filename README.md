@@ -19,7 +19,7 @@ allprojects {
 ### 2. 增加依赖/Add the dependency
 ```
 dependencies {
-    implementation 'com.github.jianwuch:StarSky:v1.0.2'
+    implementation 'com.github.jianwuch:StarSky:v1.0.3'
 }
 ```
 
@@ -43,3 +43,21 @@ one_cycle_time_ms | 远点星星循环一趟的时间
 star_nums | 星星的数量，分为远点星星和近点星星，都是您设置的数量
 meteor_head_size | 流星头部火球的大小，不要太大，建议2或4
 
+### 代码接口/interface
+使用场景：页面切换过程中合理使用以下两个接口，避免页面切换动画造成流星视觉不连续
+#### `pauseAnim()`--暂停动画
+#### `resumeAnim`--继续动画
+#### 接口使用示例
+```java
+    @Override
+    protected void onPause() {
+        super.onPause();
+        skyView.canclerAnim();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        skyView.resumeAnim();
+    }
+```
