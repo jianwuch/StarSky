@@ -17,6 +17,6 @@
       android:background="@color/colorPrimary"
       android:visibility="visible"
       app:meteor_head_size="3"
-      app:one_cycle_time="50000"
+      app:one_cycle_time_ms="50000"
       app:star_nums="20" />
 </LinearLayout>

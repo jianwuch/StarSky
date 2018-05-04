@@ -34,7 +34,6 @@ public class StarSkyView extends FrameLayout {
     private float mTranslationY;
     private int meteorTran;//流星水平移动的距离
 
-
     //近点和远点星星分别多少个
     private int mStarNums;
 
@@ -68,7 +67,7 @@ public class StarSkyView extends FrameLayout {
                 DEFAULT_METEOR_STAR_SIZE);
         mStarNums = typedArray.getInt(R.styleable.StarSkyView_star_nums, DEFAULT_STAR_NUMS);
 
-        mTimes = typedArray.getInt(R.styleable.StarSkyView_one_cycle_time,
+        mTimes = typedArray.getInt(R.styleable.StarSkyView_one_cycle_time_ms,
                 DEFAULT_FAR_STAR_TRANS_TIMES_SECOND);
     }
 
@@ -92,21 +91,35 @@ public class StarSkyView extends FrameLayout {
         mWidth = getMeasuredWidth();
 
         randomNewStar();
-        starAnim();
+
+        mHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                starAnim();
+            }
+        }, 1000);
     }
 
     private void drawMeteor(Canvas canvas) {
 
         //meteorSize流星的宽度，最开始的时候流星不显示，需要移出去流星的长度距离
-        int needTransX;
+        float needTransX;
+        float needTransY;
+        //float scal = 1;
         meteorTran += DEFAULT_METEOR_SPEED;
-        if (meteorTran >= mWidth) {
+        if (meteorTran >= mHeight) {
             meteorTran = 0;
             mRandomPosition = mMeteorRandom.nextInt(mWidth);
         }
-        needTransX = (int) (meteorTran + mRandomPosition - meteorSize);
+        needTransX = (meteorTran + mRandomPosition);
+        needTransY = meteorTran - meteorSize;
+        //if (meteorTran <= mHeight * (2 / 3.0f)) {
+        //    scal = (float) (0.5 + 0.5 * meteorTran / (mHeight * (2 / 3.0f)));
+        //}
+
         canvas.save();
-        canvas.translate(meteorTran + mRandomPosition - meteorSize, meteorTran);
+        //canvas.scale(scal, scal, meteorSize / 2, meteorSize / 2);
+        canvas.translate(needTransX, needTransY);
 
         canvas.drawCircle(meteorSize - meteorRadius, meteorSize - meteorRadius, meteorRadius,
                 mMeteorPaint);
