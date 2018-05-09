@@ -4,6 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center_horizontal"
     tools:context="com.jove.starsky.MainActivity">
 
 
@@ -19,4 +21,17 @@
       app:meteor_head_size="3"
       app:one_cycle_time_ms="50000"
       app:star_nums="20" />
+
+  <com.jove.starskylib.StarSkyView
+      android:layout_width="100dp"
+      android:layout_height="200dp"
+      android:layout_marginBottom="8dp"
+      android:layout_marginEnd="8dp"
+      android:layout_marginStart="8dp"
+      android:layout_marginTop="8dp"
+      android:background="@color/colorPrimary"
+      android:visibility="visible"
+      app:meteor_head_size="2"
+      app:one_cycle_time_ms="80000"
+      app:star_nums="10" />
 </LinearLayout>

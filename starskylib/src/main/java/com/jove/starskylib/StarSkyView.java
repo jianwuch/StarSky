@@ -108,9 +108,14 @@ public class StarSkyView extends FrameLayout {
         float needTransY;
         //float scal = 1;
         meteorTran += DEFAULT_METEOR_SPEED;
-        if (meteorTran >= mHeight) {
+
+        //mHeight+metrorSize是为了让流星整个完全的滑出去
+        if (meteorTran >= mHeight + meteorSize) {
+
+            //为了保证流星能够全屏分布，需要考虑左下角的情况
+            mRandomPosition = mMeteorRandom.nextInt(mWidth + mHeight);
+            mRandomPosition -= mHeight;
             meteorTran = 0;
-            mRandomPosition = mMeteorRandom.nextInt(mWidth);
         }
         needTransX = (meteorTran + mRandomPosition);
         needTransY = meteorTran - meteorSize;
