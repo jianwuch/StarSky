@@ -1,7 +1,7 @@
 ## 带流星的星空动图
 ### 效果
 ![image](https://github.com/jianwuch/StarSky/blob/master/pictures/demo.gif?raw=true)
-* 星星分远，近之分，移动速度不一样
+* 两种星星类型（远和近的效果），两种星星大小不一样，移动速度也不一样
 * 流星划过的效果
 >没有强制背景，这个可以让设计提供，使用场景灵活
 
