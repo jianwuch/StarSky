@@ -244,5 +244,6 @@ public class StarSkyView extends FrameLayout {
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         mHandler.removeCallbacksAndMessages(null);
+        mFarStarAnimator.removeAllUpdateListeners();
     }
 }
