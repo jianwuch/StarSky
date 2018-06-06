@@ -19,7 +19,7 @@ allprojects {
 ### 2. 增加依赖/Add the dependency
 ```
 dependencies {
-     implementation 'com.github.jianwuch:StarSky:v1.0.5'
+     implementation 'com.github.jianwuch:StarSky:v1.1.0'
 }
 ```
 
